@@ -10,7 +10,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { ChangeEvent, KeyboardEvent, MouseEvent, ReactNode } from 'react'
 import clsx from 'clsx'
 import {
-  IconPlusOutline16, IconWarningOutline16, Toast, Tooltip,
+  IconWarningOutline16, Toast, Tooltip,
 } from '@deepseek-ai/dsh-client-ui-primitives'
 import { AttachmentRail, DropOverlay, ImageLightbox } from '@deepseek-ai/dsh-client-ui-attachment'
 import type { AttachmentRailItem } from '@deepseek-ai/dsh-client-ui-attachment'
@@ -30,7 +30,6 @@ import {
   attachmentErrorText, attachmentRailLabels, dropOverlayLabels, imageSizeText, lightboxLabels,
 } from '../image-labels.ts'
 import { ContextMeter } from './ContextMeter.tsx'
-import { PermissionSelect } from './PermissionSelect.tsx'
 import css from './InputBar.module.css'
 
 /** Decoration product of the no-session state (no machine, empty draft). */
@@ -45,7 +44,7 @@ export type InputBarProps = ComposerBarProps
 
 export function InputBar({
   useSession, useInput, inputActions, keyboard, addImages, removeImage, draftImages,
-  resolveSubmitMode, toggleCommandMenu, stop, command, t,
+  resolveSubmitMode, stop, t,
   renderSlot, useNotices, useLexicon, useMenuLauncher,
   useProjection, sessionId, variant, disabled: inert = false, blocked,
   workspacePickerOpen = false, onRequestWorkspace,
@@ -117,10 +116,6 @@ export function InputBar({
       composingRef.current = false
     }, 10)
   }
-
-  // The Access seat's data: the host-computed permissions projection
-  // (undefined = capability absent → the chip renders nothing).
-  const permissions = useProjection('permissions')
 
   // A continuable child without its live parent cannot accept human input,
   // but its independent Stop below stays available while it runs.
@@ -533,11 +528,6 @@ export function InputBar({
     inputRef.current?.focus({ preventScroll: true })
   }
 
-  const onToggleCommandMenu = (): void => {
-    const el = inputRef.current
-    if (el !== null) toggleCommandMenu?.(selectionOf(el))
-  }
-
   // Ordinary sessions retain their primary Send/Stop toggle. A continuable
   // child keeps Send as the primary action and exposes Stop independently so
   // pointer users can queue follow-ups while its current turn is running.
@@ -553,13 +543,6 @@ export function InputBar({
     /* v8 ignore next -- defensive: the primary button is disabled while empty||disabled, so a click cannot reach the false arm. */
     if (!empty && !disabled && !machineBusy) inputActions.submit()
   }
-
-  // The Access seat: the projection-fed permission chip (renders nothing
-  // while the permissions key is absent — permission-less host or Draft —
-  // or while the command face is absent with the session).
-  const accessSelect: ReactNode = command === undefined
-    ? null
-    : <PermissionSelect key={sessionId} value={permissions} locked={locked} command={command} t={t} />
 
   // Mirror-layer decorations: a visible backdrop with transparent text. The
   // claim token highlights through behind the textarea glyphs; each U+FFFC
@@ -731,22 +714,7 @@ export function InputBar({
         </div>
         <div className={css.row}>
           <div className={css.tools}>
-            <Tooltip label={t('input.commands')} side="top" delayMs={500}>
-              <button
-                type="button"
-                className={css.add}
-                aria-label={t('input.commands')}
-                aria-haspopup="listbox"
-                aria-expanded={commandMenuOpen}
-                disabled={locked || toggleCommandMenu === undefined}
-                onMouseDown={keepFocus}
-                onClick={onToggleCommandMenu}
-              >
-                <IconPlusOutline16 size={14} />
-              </button>
-            </Tooltip>
             <div className={css.modes}>
-              {accessSelect}
               {renderSlot('conversation.input.plan', { locked })}
             </div>
             {leftItems}

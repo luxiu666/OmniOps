@@ -2,35 +2,45 @@
 // chain, AND the composer bar (session-maybe slot) stay mounted across
 // no-session/session transitions — the bar renders inert via owner props.
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import clsx from 'clsx'
-import type { WorkspaceId } from '@deepseek-ai/dsh-client-runtime/client'
 import type { ConversationSlotProps, InputZone } from '../contract/slots.ts'
-import { HeroGlow, HeroShell, WorkspaceChip, workspaceLabel } from './EmptyHero.tsx'
+import { HeroGlow, HeroShell } from './EmptyHero.tsx'
 import css from './ConversationRoot.module.css'
 
 /** Full props composed from the slot contract. */
 export type ConversationRootProps = ConversationSlotProps
 
+/** Database kinds selectable from the hero (diagnosis scope). */
+const DB_TYPES = [
+  { id: 'mysql', label: 'MySQL' },
+  { id: 'redis', label: 'Redis' },
+  { id: 'mongodb', label: 'MongoDB' },
+] as const
+
+/** Diagnosis skills selectable from the hero. */
+const SKILLS = [
+  { id: 'slow-query', label: '慢查询分析' },
+  { id: 'lock-wait', label: '锁等待分析' },
+  { id: 'connection-pool', label: '连接池分析' },
+] as const
+
 export function ConversationRoot({
-  sessionId, useSession, useSessions, useWorkspaces, useInput, useComposerBlock,
-  renderSlot, renderSlotChain, selectWorkspace, t,
+  sessionId, useSession, useSessions, useInput, useComposerBlock,
+  renderSlot, renderSlotChain, t,
 }: ConversationRootProps) {
   const openState = useSession(s => s.openState)
   const composerPhase = useSession(s => s.composerPhase)
   const pending = useSession(s => s.pending) ?? []
   const session = useSession(s => s)
   const inputState = useInput(s => s)
-  const cwd = useSessions(s => sessionId === undefined ? undefined : s.byId[sessionId]?.cwd)
   const summaryBlank = useSessions(s => sessionId === undefined ? undefined : s.byId[sessionId]?.blank)
-  const workspaces = useWorkspaces(s => s)
   // A plugin this package cannot import (ui-model-selection) says this session cannot
   // send; its reason is already localized by whoever raised it.
   const composerBlock = useComposerBlock(block => block)
 
-  const [pickerOpen, setPickerOpen] = useState(false)
-  const [pendingWorkspaceId, setPendingWorkspaceId] = useState<WorkspaceId | undefined>()
-  const pickerAnchor = useRef<HTMLButtonElement>(null)
+  const [dbType, setDbType] = useState<string>(DB_TYPES[0].id)
+  const [skill, setSkill] = useState<string>(SKILLS[0].id)
 
   // Publishes the seat's live height as --dsh-composer-height on the scroll
   // body so floating controls (ChatView back-to-bottom) clear the composer as
@@ -48,32 +58,9 @@ export function ConversationRoot({
     seatObserver.current.observe(seat)
   }, [])
 
-  const sessionWorkspace = sessionId === undefined
-    ? undefined
-    : workspaces.items.find(workspace => workspace.sessionIds.includes(sessionId))
-  const pendingWorkspace = workspaces.items.find(
-    workspace => workspace.workspaceId === pendingWorkspaceId,
-  )
-
-  // Clear the pending pick once the session lands in it, or when the picked
-  // workspace disappears from a ready list (deleted from the sidebar).
-  useEffect(() => {
-    if (pendingWorkspaceId === undefined) return
-    if (sessionWorkspace?.workspaceId === pendingWorkspaceId
-      || (workspaces.phase === 'ready' && pendingWorkspace === undefined)) {
-      setPendingWorkspaceId(undefined)
-    }
-  }, [pendingWorkspaceId, sessionWorkspace?.workspaceId, workspaces.phase, pendingWorkspace])
-
   // While a session is still replaying (loading + blank) the hero/docked
   // choice is unknowable — render the composer hidden instead of flashing
   // the centered hero and snapping to the docked bar (or vice versa).
-  // Exemption: a session the list summary already proves blank can only
-  // land on the hero, so hiding would blank the column for the whole
-  // history round-trip (the startup auto-selection flash) for nothing.
-  // The exemption is deliberately open-state-wide, not loading-only: a
-  // summary-blank session is the hero before its open starts (`cold`) and
-  // after one fails (`error`) for the same reason — there is no history.
   const settling = sessionId !== undefined && composerPhase === 'blank' && openState === 'loading'
     && summaryBlank !== true
   const hero = sessionId === undefined
@@ -81,73 +68,33 @@ export function ConversationRoot({
   const zone: InputZone | undefined =
     session === undefined || inputState === undefined ? undefined : { session, input: inputState }
 
-  // The chip is a selector; label resolution walks the flow top-down:
-  //   1. a just-picked workspace (pending) → its title;
-  //   2. cold start, no session yet → placeholder ("Choose workspace");
-  //   3. the blank session's workspace is in the list → its title;
-  //   4. list still loading → cwd folder name bridges so the title does not
-  //      flash on refresh (empty cwd → placeholder);
-  //   5. list ready but no owning workspace (deleted from the sidebar) →
-  //      placeholder, never the deleted folder's name via cwd.
-  const chipTitle = pendingWorkspace?.title
-    ?? (sessionId === undefined
-      ? undefined
-      : sessionWorkspace?.title
-        ?? (workspaces.phase === 'ready' || cwd === undefined || cwd === ''
-          ? undefined
-          : workspaceLabel(cwd)))
-
   const heroWorkspaceRow = (
     <div className={css.heroWorkspaceRow}>
-      <WorkspaceChip
-        buttonRef={pickerAnchor}
-        label={chipTitle}
-        menuOpen={pickerOpen}
-        onClick={() => { setPickerOpen(open => !open) }}
-        t={t}
-      />
-      {renderSlot('conversation.hero.workspace', {
-        open: pickerOpen,
-        anchorRef: pickerAnchor,
-        selectedId: pendingWorkspaceId ?? sessionWorkspace?.workspaceId,
-        onPick: (workspaceId) => {
-          setPickerOpen(false)
-          setPendingWorkspaceId(workspaceId)
-          void selectWorkspace(workspaceId).catch(() => {
-            setPendingWorkspaceId(current => current === workspaceId ? undefined : current)
-          })
-        },
-        onClose: () => { setPickerOpen(false) },
-      })}
-      {renderSlot('conversation.hero.agentPreset', {})}
+      <label className={css.heroSelect}>
+        <span className={css.heroSelectLabel}>数据库</span>
+        <select value={dbType} onChange={e => setDbType(e.target.value)}>
+          {DB_TYPES.map(option => (
+            <option key={option.id} value={option.id}>{option.label}</option>
+          ))}
+        </select>
+      </label>
+      <label className={css.heroSelect}>
+        <span className={css.heroSelectLabel}>诊断</span>
+        <select value={skill} onChange={e => setSkill(e.target.value)}>
+          {SKILLS.map(option => (
+            <option key={option.id} value={option.id}>{option.label}</option>
+          ))}
+        </select>
+      </label>
     </div>
   )
 
-  // The placeholder chip ("Choose workspace") and the Workspace-trigger input travel
-  // together: no workspace picked yet (cold start, no session at all), or a
-  // blank session whose workspace vanished (deleted from the sidebar). The
-  // bar is ONE session-maybe slot rendered unconditionally — inert is a prop,
-  // not a different tree, so the textarea DOM survives the transition.
-  const inert = sessionId === undefined || (hero && chipTitle === undefined)
-  // A raised block is the same inert posture with the blocker's own reason:
-  // one disabled textarea, never a second tree. The no-workspace state wins
-  // when both hold — picking a workspace is the earlier prerequisite.
-  const blocked = !inert && composerBlock !== undefined
+  const blocked = composerBlock !== undefined
   const inputBar = renderSlot('conversation.composer.bar', {
     variant: hero ? 'hero' : 'composer',
-    ...(inert
-      ? {
-        disabled: true,
-        placeholder: t('placeholder.workspace'),
-        workspacePickerOpen: pickerOpen,
-        onRequestWorkspace: () => { setPickerOpen(true) },
-      }
-      : blocked
-        // `blocked`, not `disabled`: the bar refuses input either way, but a
-        // block keeps the model seat live because choosing a model is how the
-        // user clears it.
-        ? { blocked: composerBlock, placeholder: composerBlock.reason }
-        : hero ? { placeholder: t('placeholder.hero') } : {}),
+    ...(blocked
+      ? { blocked: composerBlock, placeholder: composerBlock.reason }
+      : hero ? { placeholder: t('placeholder.hero') } : {}),
     overlay: renderSlot('conversation.input.overlay', {}),
     leftItems: zone === undefined ? null : renderSlot('conversation.input.left', zone),
     rightItems: zone === undefined ? null : renderSlot('conversation.input.right', zone),

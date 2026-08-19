@@ -343,12 +343,33 @@
 .heroWorkspaceRow {
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 8px;
   min-width: 0;
   margin-top: 4px;
   /* figma drew px 8; nudged +12 so the chip's folder glyph lines up closer to
      the card's inner controls below. */
   padding-left: 20px;
+}
+
+.heroSelect {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.heroSelectLabel {
+  font-size: 12px;
+  opacity: 0.7;
+  white-space: nowrap;
+}
+
+.heroSelect select {
+  border: none;
+  background: transparent;
+  color: inherit;
+  font-size: 13px;
+  outline: none;
+  cursor: pointer;
 }
 
 /* Hero: the composer sits inside the session scroll body; center there so
