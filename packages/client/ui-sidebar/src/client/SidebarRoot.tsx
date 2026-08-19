@@ -137,7 +137,7 @@ export function SidebarRoot({
             aria-label={t('session.new.label')}
             onClick={() => { startSession() }}
           >
-            <span className={css.brandText}>数据库智能诊断系统</span>
+            <span className={css.brandText}>OmniOps Platform</span>
           </button>
         )}
         {/* Rail resting state is the whale mark; hovering swaps in the panel

@@ -11,19 +11,170 @@ import css from './ConversationRoot.module.css'
 /** Full props composed from the slot contract. */
 export type ConversationRootProps = ConversationSlotProps
 
-/** Database kinds selectable from the hero (diagnosis scope). */
-const DB_TYPES = [
-  { id: 'mysql', label: 'MySQL' },
-  { id: 'redis', label: 'Redis' },
-  { id: 'mongodb', label: 'MongoDB' },
-] as const
+/** 诊断技能类型。 */
+interface SkillOption { readonly id: string; readonly label: string }
+/** 组件选项：属于某个技术栈，带该组件可用的诊断技能。 */
+interface ComponentOption { readonly id: string; readonly label: string; readonly skills: readonly SkillOption[] }
+/** 技术栈选项：决定组件列表。 */
+interface TechStackOption { readonly id: string; readonly label: string; readonly components: readonly ComponentOption[] }
 
-/** Diagnosis skills selectable from the hero. */
-const SKILLS = [
-  { id: 'slow-query', label: '慢查询分析' },
-  { id: 'lock-wait', label: '锁等待分析' },
-  { id: 'connection-pool', label: '连接池分析' },
-] as const
+/**
+ * 首页诊断范围的三级目录：技术栈 → 组件 → 诊断技能。
+ * 下拉框按此联动：选技术栈刷新组件列表，选组件刷新诊断技能列表。
+ * 维护方式：新增/调整诊断能力只改这里即可（映射表同步见 docs/cookbook/editing-web-copy-and-fonts.zh.md）。
+ */
+const TECH_STACKS = [
+  {
+    id: 'database',
+    label: '数据库',
+    components: [
+      {
+        id: 'mysql',
+        label: 'MySQL',
+        skills: [
+          { id: 'slow-query', label: '慢查询分析' },
+          { id: 'lock-wait', label: '锁等待分析' },
+          { id: 'connection-pool', label: '连接池分析' },
+          { id: 'deadlock', label: '死锁检测' },
+        ],
+      },
+      {
+        id: 'redis',
+        label: 'Redis',
+        skills: [
+          { id: 'slow-query', label: '慢查询分析' },
+          { id: 'big-key', label: '大 Key 分析' },
+          { id: 'memory', label: '内存分析' },
+          { id: 'connection', label: '连接数分析' },
+        ],
+      },
+      {
+        id: 'mongodb',
+        label: 'MongoDB',
+        skills: [
+          { id: 'slow-query', label: '慢查询分析' },
+          { id: 'index', label: '索引分析' },
+          { id: 'lock-wait', label: '锁等待分析' },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'compute',
+    label: '计算资源',
+    components: [
+      {
+        id: 'gpu',
+        label: 'GPU',
+        skills: [
+          { id: 'utilization', label: '利用率分析' },
+          { id: 'vram', label: '显存分析' },
+          { id: 'drop', label: '掉卡检测' },
+        ],
+      },
+      {
+        id: 'cpu',
+        label: 'CPU',
+        skills: [
+          { id: 'utilization', label: '利用率分析' },
+          { id: 'load', label: '负载分析' },
+          { id: 'context-switch', label: '上下文切换分析' },
+        ],
+      },
+      {
+        id: 'npu',
+        label: 'NPU',
+        skills: [
+          { id: 'utilization', label: '利用率分析' },
+          { id: 'hbm', label: 'HBM 显存分析' },
+          { id: 'drop', label: '掉卡检测' },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'middleware',
+    label: '中间件',
+    components: [
+      {
+        id: 'kafka',
+        label: 'Kafka',
+        skills: [
+          { id: 'backlog', label: '消息堆积分析' },
+          { id: 'consumer-lag', label: '消费者 Lag 分析' },
+          { id: 'partition', label: '分区倾斜分析' },
+        ],
+      },
+      {
+        id: 'rabbitmq',
+        label: 'RabbitMQ',
+        skills: [
+          { id: 'backlog', label: '消息堆积分析' },
+          { id: 'connection', label: '连接分析' },
+          { id: 'memory', label: '内存分析' },
+        ],
+      },
+      {
+        id: 'nginx',
+        label: 'Nginx',
+        skills: [
+          { id: 'connection', label: '连接分析' },
+          { id: 'throughput', label: '吞吐分析' },
+          { id: 'upstream', label: '上游超时分析' },
+        ],
+      },
+      {
+        id: 'zookeeper',
+        label: 'Zookeeper',
+        skills: [
+          { id: 'session', label: '会话分析' },
+          { id: 'election', label: '选举分析' },
+          { id: 'latency', label: '延迟分析' },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'kubernetes',
+    label: 'Kubernetes',
+    components: [
+      {
+        id: 'node',
+        label: 'Node',
+        skills: [
+          { id: 'watermark', label: '资源水位分析' },
+          { id: 'notready', label: '节点异常检测' },
+        ],
+      },
+      {
+        id: 'pod',
+        label: 'Pod',
+        skills: [
+          { id: 'oom', label: 'OOM 分析' },
+          { id: 'restart', label: '重启分析' },
+          { id: 'schedule', label: '调度分析' },
+        ],
+      },
+      {
+        id: 'deployment',
+        label: 'Deployment',
+        skills: [
+          { id: 'rollout-fail', label: '发布失败分析' },
+          { id: 'rollout', label: '滚动更新分析' },
+        ],
+      },
+      {
+        id: 'service',
+        label: 'Service',
+        skills: [
+          { id: 'connection', label: '连接分析' },
+          { id: 'dns', label: 'DNS 解析分析' },
+          { id: 'loadbalance', label: '负载均衡分析' },
+        ],
+      },
+    ],
+  },
+] as const satisfies readonly TechStackOption[]
 
 export function ConversationRoot({
   sessionId, useSession, useSessions, useInput, useComposerBlock,
@@ -39,8 +190,27 @@ export function ConversationRoot({
   // send; its reason is already localized by whoever raised it.
   const composerBlock = useComposerBlock(block => block)
 
-  const [dbType, setDbType] = useState<string>(DB_TYPES[0].id)
-  const [skill, setSkill] = useState<string>(SKILLS[0].id)
+  const [techStackId, setTechStackId] = useState<string>(TECH_STACKS[0].id)
+  const [componentId, setComponentId] = useState<string>(TECH_STACKS[0].components[0].id)
+  const [skillId, setSkillId] = useState<string>(TECH_STACKS[0].components[0].skills[0].id)
+
+  // 当前技术栈与其组件列表（按选中项派生；状态短暂不一致时回退到首项）。
+  const techStack = TECH_STACKS.find(s => s.id === techStackId) ?? TECH_STACKS[0]
+  const component = techStack.components.find(c => c.id === componentId) ?? techStack.components[0]
+
+  // 切换技术栈：组件重置为该技术栈下的第一个，诊断技能随之重置。
+  const pickTechStack = (id: string): void => {
+    const stack = TECH_STACKS.find(s => s.id === id) ?? TECH_STACKS[0]
+    setTechStackId(stack.id)
+    setComponentId(stack.components[0].id)
+    setSkillId(stack.components[0].skills[0].id)
+  }
+  // 切换组件：诊断技能重置为该组件下的第一个。
+  const pickComponent = (id: string): void => {
+    const comp = techStack.components.find(c => c.id === id) ?? techStack.components[0]
+    setComponentId(comp.id)
+    setSkillId(comp.skills[0].id)
+  }
 
   // Publishes the seat's live height as --dsh-composer-height on the scroll
   // body so floating controls (ChatView back-to-bottom) clear the composer as
@@ -71,17 +241,25 @@ export function ConversationRoot({
   const heroWorkspaceRow = (
     <div className={css.heroWorkspaceRow}>
       <label className={css.heroSelect}>
-        <span className={css.heroSelectLabel}>数据库</span>
-        <select value={dbType} onChange={e => setDbType(e.target.value)}>
-          {DB_TYPES.map(option => (
+        <span className={css.heroSelectLabel}>技术栈</span>
+        <select value={techStackId} onChange={e => pickTechStack(e.target.value)}>
+          {TECH_STACKS.map(option => (
+            <option key={option.id} value={option.id}>{option.label}</option>
+          ))}
+        </select>
+      </label>
+      <label className={css.heroSelect}>
+        <span className={css.heroSelectLabel}>组件</span>
+        <select value={componentId} onChange={e => pickComponent(e.target.value)}>
+          {techStack.components.map(option => (
             <option key={option.id} value={option.id}>{option.label}</option>
           ))}
         </select>
       </label>
       <label className={css.heroSelect}>
         <span className={css.heroSelectLabel}>诊断</span>
-        <select value={skill} onChange={e => setSkill(e.target.value)}>
-          {SKILLS.map(option => (
+        <select value={skillId} onChange={e => setSkillId(e.target.value)}>
+          {component.skills.map(option => (
             <option key={option.id} value={option.id}>{option.label}</option>
           ))}
         </select>

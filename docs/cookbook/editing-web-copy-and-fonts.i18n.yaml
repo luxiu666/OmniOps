@@ -2,5 +2,5 @@
 # side as of the last confirmed-consistent state. Both languages carry equal authority;
 # after editing either side, bring the other along and re-record with:
 #   pnpm run verify-translation-pairing --write docs/cookbook/editing-web-copy-and-fonts.md
-editing-web-copy-and-fonts.md: 44036fe65c03a98d9047b2eeb8c3dbaa8d11fd5b
-editing-web-copy-and-fonts.zh.md: 90d24bad926268fb94a2d514b1eee517bfe45d65
+editing-web-copy-and-fonts.md: 21d338c277899a69cf4bbad536b3008a00472d5a
+editing-web-copy-and-fonts.zh.md: e8261b4deef59c467bfb3b1eeeca9dfe3f114bac
