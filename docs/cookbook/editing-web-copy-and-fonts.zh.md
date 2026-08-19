@@ -193,13 +193,13 @@ const TECH_STACKS = [
 
 ```bash
 # 改了 ui-sidebar（品牌名文字 / 字号）
-cd /Users/zhaohailiang/Desktop/WorkBuddy/db_diagnosis_harness/packages/client/ui-sidebar
+cd /Users/zhaohailiang/Desktop/WorkBuddy/OmniOps/packages/client/ui-sidebar
 pnpm exec tsdown
 ```
 
 ```bash
 # 改了 ui-conversation（首页口号 / 诊断目录）
-cd /Users/zhaohailiang/Desktop/WorkBuddy/db_diagnosis_harness/packages/client/ui-conversation
+cd /Users/zhaohailiang/Desktop/WorkBuddy/OmniOps/packages/client/ui-conversation
 pnpm exec tsdown
 ```
 
@@ -208,7 +208,7 @@ pnpm exec tsdown
 > 改完 `ConversationRoot.tsx` 建议顺手跑一次类型检查（本仓库启用了严格索引检查，空数组会报错）：
 >
 > ```bash
-> cd /Users/zhaohailiang/Desktop/WorkBuddy/db_diagnosis_harness
+> cd /Users/zhaohailiang/Desktop/WorkBuddy/OmniOps
 > pnpm exec tsc --noEmit -p packages/client/ui-conversation/tsconfig.json
 > ```
 
@@ -217,7 +217,7 @@ pnpm exec tsdown
 仓库提供了保存即自动重建的命令：
 
 ```bash
-cd /Users/zhaohailiang/Desktop/WorkBuddy/db_diagnosis_harness
+cd /Users/zhaohailiang/Desktop/WorkBuddy/OmniOps
 pnpm run dev:web
 ```
 

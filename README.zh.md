@@ -27,8 +27,8 @@ npx @deepseek-ai/dsh web
 如需从仓库源码运行：
 
 ```sh
-git clone https://github.com/deepseek-ai/deepseek-harness.git
-cd deepseek-harness
+git clone https://github.com/luxiu666/OmniOps.git
+cd OmniOps
 pnpm install
 pnpm run build
 pnpm dsh web
@@ -36,7 +36,7 @@ pnpm dsh web
 
 ## 社区与支持
 
-- 欢迎通过 [GitHub Discussions](https://github.com/deepseek-ai/deepseek-harness/discussions) 提交反馈或 bug 报告。
+- 欢迎通过 [GitHub Discussions](https://github.com/luxiu666/OmniOps/discussions) 提交反馈或 bug 报告。
 - 为你的插件仓库添加 [`dsh-plugin`](https://github.com/topics/dsh-plugin) 话题，便于被发现。
 - 欢迎加入 DeepSeek Harness 企微群：扫码添加企微小助手并填写入群问卷，完成后小助手会邀请你入群。
 

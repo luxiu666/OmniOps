@@ -193,13 +193,13 @@ After editing source, run the build inside the package directory; success prints
 
 ```bash
 # changed ui-sidebar (brand text / font size)
-cd /Users/zhaohailiang/Desktop/WorkBuddy/db_diagnosis_harness/packages/client/ui-sidebar
+cd /Users/zhaohailiang/Desktop/WorkBuddy/OmniOps/packages/client/ui-sidebar
 pnpm exec tsdown
 ```
 
 ```bash
 # changed ui-conversation (hero slogan / diagnosis catalog)
-cd /Users/zhaohailiang/Desktop/WorkBuddy/db_diagnosis_harness/packages/client/ui-conversation
+cd /Users/zhaohailiang/Desktop/WorkBuddy/OmniOps/packages/client/ui-conversation
 pnpm exec tsdown
 ```
 
@@ -208,7 +208,7 @@ Then refresh the browser (Cmd+R); the running `dsh web` server usually hot-reloa
 > After editing `ConversationRoot.tsx`, run a typecheck too (the repo enables strict index checks, so an empty array fails):
 >
 > ```bash
-> cd /Users/zhaohailiang/Desktop/WorkBuddy/db_diagnosis_harness
+> cd /Users/zhaohailiang/Desktop/WorkBuddy/OmniOps
 > pnpm exec tsc --noEmit -p packages/client/ui-conversation/tsconfig.json
 > ```
 
@@ -217,7 +217,7 @@ Then refresh the browser (Cmd+R); the running `dsh web` server usually hot-reloa
 The repo provides a save-to-rebuild watcher:
 
 ```bash
-cd /Users/zhaohailiang/Desktop/WorkBuddy/db_diagnosis_harness
+cd /Users/zhaohailiang/Desktop/WorkBuddy/OmniOps
 pnpm run dev:web
 ```
 
