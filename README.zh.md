@@ -1,14 +1,14 @@
-# DeepSeek Harness
+# OmniOps
 
 [English](README.md) | 中文
 
-DeepSeek Harness（`dsh`）是由 [DeepSeek AI](https://deepseek.com) 开发的开源 agent harness（智能体框架）。
+**OmniOps** 是公司级的 AIOps 智能运维平台，专注于全技术栈的问题快速诊断。
 
-它采用**一切皆插件**的架构，并由 [Cordis](https://github.com/cordiverse/cordis) 驱动，其设计参见论文 [_A Programming Paradigm for Spatiotemporal Composability_](https://github.com/cordiverse/paper)。
+它基于开源的 [DeepSeek Harness](https://deepseek.com) 智能体框架构建——该框架采用**一切皆插件**的架构，由 [Cordis](https://github.com/cordiverse/cordis) 驱动——并在其之上扩展为一套运维诊断工具集。其「技术栈 → 组件 → 诊断技能」三级联动的诊断范围，覆盖数据库死锁、大 Key 检测、GPU 显存/利用率、掉卡检测等场景，帮助工程师快速定位并解决故障。
 
 ## 开发者预览
 
-DeepSeek Harness 目前处于 _开发者预览_ 阶段，正在快速迭代。**未来将出现破坏兼容性的变更。**
+OmniOps 目前处于 _开发者预览_ 阶段，正在快速迭代。**未来将出现破坏兼容性的变更。**
 
 ## 运行
 
@@ -38,7 +38,7 @@ pnpm dsh web
 
 - 欢迎通过 [GitHub Discussions](https://github.com/luxiu666/OmniOps/discussions) 提交反馈或 bug 报告。
 - 为你的插件仓库添加 [`dsh-plugin`](https://github.com/topics/dsh-plugin) 话题，便于被发现。
-- 欢迎加入 DeepSeek Harness 企微群：扫码添加企微小助手并填写入群问卷，完成后小助手会邀请你入群。
+- 欢迎加入 OmniOps 企微群：扫码添加企微小助手并填写入群问卷，完成后小助手会邀请你入群。
 
 <table>
   <thead>
@@ -50,9 +50,9 @@ pnpm dsh web
   </thead>
   <tbody>
     <tr>
-      <td align="center"><img src="assets/community-wecom-assistant.png" alt="DeepSeek Harness 企微小助手二维码" width="180" height="180"></td>
-      <td align="center"><a href="https://trtgsjkv6r.feishu.cn/share/base/form/shrcnIt5twSVdLGD52KJBckGCgg"><img src="assets/community-wecom-survey.png" alt="DeepSeek Harness 入群问卷二维码" width="180" height="180"></a></td>
-      <td align="center"><img src="assets/community-wechat-official-account.png" alt="DeepSeek Harness 团队微信公众号二维码" width="180" height="180"></td>
+      <td align="center"><img src="assets/community-wecom-assistant.png" alt="OmniOps 企微小助手二维码" width="180" height="180"></td>
+      <td align="center"><a href="https://trtgsjkv6r.feishu.cn/share/base/form/shrcnIt5twSVdLGD52KJBckGCgg"><img src="assets/community-wecom-survey.png" alt="OmniOps 入群问卷二维码" width="180" height="180"></a></td>
+      <td align="center"><img src="assets/community-wechat-official-account.png" alt="OmniOps 团队微信公众号二维码" width="180" height="180"></td>
     </tr>
   </tbody>
 </table>
