@@ -21,7 +21,7 @@ OmniOps 目前处于 _开发者预览_ 阶段，正在快速迭代。**未来将
 | 组件 | 位置 | 是什么 |
 |---|---|---|
 | MCP server | `connectors/mysql-diag-mcp/` | 独立 Node 进程，负责调 pt-query-digest / EXPLAIN / 查表结构 |
-| skill + 接线 | `skills/mysql-slow-query-analysis/` | 慢 SQL 排查方法论 + dsh 侧的接入配置 |
+| skill + 配置 | `skills/mysql-slow-query-analysis/` | 慢 SQL 排查方法论，以及让 dsh 认识它的配置 |
 
 ### 前置条件
 
@@ -72,9 +72,9 @@ MCP_HTTP_PORT=8080
 > ```
 > `MYSQL_SLOW_LOG_DIR` 指向的是**目录**，server 会按时间段自动挑选其中的慢日志文件复制到临时目录分析，不写死文件名、不动原目录。
 
-#### 3. 手动配 profile 接线（⚠️ bundle 尚未发布到 npm）
+#### 3. 配置 dsh，让它认识这个功能（⚠️ 需手动做）
 
-目前 bundle 还没发到 npm，所以**别人 clone 后不会自动获得接线**，需要手动写一次。
+这一步说白了就是「告诉 dsh 去哪找这个功能」。dsh 是插件化的，默认不认识慢查询分析，你得在它的配置文件里登记两件事——**① 分析方法（skill）放在哪个目录，② 后台服务（MCP server）连哪个地址**。因为一键安装包（bundle）还没发到 npm，没法自动完成，所以要手动写一次。
 
 先让 dsh 生成 profile（跑一次即可，看到界面后退出）：
 
@@ -117,7 +117,7 @@ cd /Users/你/OmniOps
 pnpm dsh web
 ```
 
-验证接线是否生效（能列出 `mysql-diag` 行即成功）：
+验证配置是否生效（能列出 `mysql-diag` 这一行即成功）：
 
 ```sh
 pnpm dsh web --dump-config | grep -A5 "id: mysql-diag"
