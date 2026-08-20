@@ -197,6 +197,11 @@ export function ConversationRoot({
   // 当前技术栈与其组件列表（按选中项派生；状态短暂不一致时回退到首项）。
   const techStack = TECH_STACKS.find(s => s.id === techStackId) ?? TECH_STACKS[0]
   const component = techStack.components.find(c => c.id === componentId) ?? techStack.components[0]
+  // 派生占位文案：随选中项联动，引导用户按统一格式描述任务。
+  const currentSkill = component.skills.find(s => s.id === skillId) ?? component.skills[0]
+  const heroPlaceholder =
+    `【${techStack.label} / ${component.label} / ${currentSkill.label}】` +
+    '请描述任务，例如「帮我分析 10.0.0.5:3306 的慢查询，时间段：2026-08-10 10:00:01 到 2026-08-10 11:00:01」'
 
   // 切换技术栈：组件重置为该技术栈下的第一个，诊断技能随之重置。
   const pickTechStack = (id: string): void => {
@@ -272,7 +277,7 @@ export function ConversationRoot({
     variant: hero ? 'hero' : 'composer',
     ...(blocked
       ? { blocked: composerBlock, placeholder: composerBlock.reason }
-      : hero ? { placeholder: t('placeholder.hero') } : {}),
+      : hero ? { placeholder: heroPlaceholder } : {}),
     overlay: renderSlot('conversation.input.overlay', {}),
     leftItems: zone === undefined ? null : renderSlot('conversation.input.left', zone),
     rightItems: zone === undefined ? null : renderSlot('conversation.input.right', zone),

@@ -1,0 +1,41 @@
+# mysql-diag bundle：给 dsh 加上「MySQL 慢查询分析」skill + 自动拉起 mysql-diag-mcp（stdio）
+#
+# 依赖（用户需自行安装）：
+#   - mysql-diag-mcp（npm 包，提供 mysql-diag-mcp-stdio 可执行文件）
+#   - 环境变量：MYSQL_USER / MYSQL_PASSWORD / MYSQL_DATABASE / MYSQL_SLOW_LOG_DIR（PT_QUERY_DIGEST 可选）
+#
+# 说明：
+#   - skill-filesystem：web-app bundle 默认 disable 了 host skill-filesystem，这里重新启用，
+#     并把它指向本 bundle 自带的 skills 目录（用 createRequire 按包名解析，失败则回退为空串）。
+#   - mcp-client：走 stdio，dsh 会自动 spawn `mysql-diag-mcp-stdio` 子进程；凭据从 dsh 进程的环境变量透传。
+
+- id: skill-filesystem
+  disabled: false
+  config:
+    customSkillDirs:
+      - !!js >-
+        (() => {
+          const { createRequire } = process.getBuiltinModule('node:module')
+          const path = process.getBuiltinModule('node:path')
+          try {
+            const pkg = createRequire(process.cwd() + '/package.json').resolve('@deepseek-ai/dsh-mysql-diag/package.json')
+            return path.join(path.dirname(pkg), 'skills')
+          } catch {
+            return ''
+          }
+        })()
+
+- insert:
+    - id: mysql-diag
+      name: '@deepseek-ai/dsh-mcp-client'
+      config:
+        serverName: mysql_diag
+        transport: stdio
+        command: mysql-diag-mcp-stdio
+        args: []
+        env:
+          MYSQL_USER: !!js process.env.MYSQL_USER ?? ''
+          MYSQL_PASSWORD: !!js process.env.MYSQL_PASSWORD ?? ''
+          MYSQL_DATABASE: !!js process.env.MYSQL_DATABASE ?? ''
+          MYSQL_SLOW_LOG_DIR: !!js process.env.MYSQL_SLOW_LOG_DIR ?? ''
+          PT_QUERY_DIGEST: !!js process.env.PT_QUERY_DIGEST ?? '/usr/local/mysql/bin/pt-query-digest'

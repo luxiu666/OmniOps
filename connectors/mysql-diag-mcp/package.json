@@ -1,0 +1,31 @@
+{
+  "name": "mysql-diag-mcp",
+  "version": "1.0.0",
+  "description": "MySQL 慢查询诊断 MCP server：pt-query-digest 慢日志分析 + EXPLAIN 执行计划 + 表结构/索引检查。支持 stdio 与 streamable-http 两种 transport。",
+  "type": "module",
+  "bin": {
+    "mysql-diag-mcp": "dist/index.js",
+    "mysql-diag-mcp-stdio": "dist/stdio.js"
+  },
+  "files": [
+    "dist/",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/index.ts",
+    "start": "node --env-file=.env dist/index.js",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "mysql2": "^3.23.3",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0",
+    "vitest": "^2.1.0"
+  }
+}

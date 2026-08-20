@@ -1,0 +1,19 @@
+{
+  "name": "@deepseek-ai/dsh-mysql-diag",
+  "version": "0.1.0",
+  "description": "MySQL 慢查询诊断 bundle：skill（mysql-slow-query-analysis）+ mcp-client（stdio 自动拉起 mysql-diag-mcp）",
+  "type": "module",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "cordis.patch.yml",
+    "skills/"
+  ],
+  "license": "MIT",
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}

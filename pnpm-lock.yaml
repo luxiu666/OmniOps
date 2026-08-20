@@ -1256,6 +1256,8 @@ importers:
         specifier: workspace:^
         version: link:../../core/session
 
+  packages/bundle/mysql-diag: {}
+
   packages/bundle/web-app:
     dependencies:
       '@deepseek-ai/dsh-agent-presets':
