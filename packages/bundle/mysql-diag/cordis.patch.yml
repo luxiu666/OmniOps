@@ -18,7 +18,7 @@
           const { createRequire } = process.getBuiltinModule('node:module')
           const path = process.getBuiltinModule('node:path')
           try {
-            const pkg = createRequire(process.cwd() + '/package.json').resolve('@deepseek-ai/dsh-mysql-diag/package.json')
+            const pkg = createRequire(process.cwd() + '/package.json').resolve('@luxiu666/dsh-mysql-diag/package.json')
             return path.join(path.dirname(pkg), 'skills')
           } catch {
             return ''

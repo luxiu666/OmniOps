@@ -2,6 +2,7 @@
   "name": "mysql-diag-mcp",
   "version": "1.0.0",
   "description": "MySQL 慢查询诊断 MCP server：pt-query-digest 慢日志分析 + EXPLAIN 执行计划 + 表结构/索引检查。支持 stdio 与 streamable-http 两种 transport。",
+  "license": "MIT",
   "type": "module",
   "bin": {
     "mysql-diag-mcp": "dist/index.js",

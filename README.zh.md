@@ -34,6 +34,8 @@ pnpm run build
 pnpm dsh web
 ```
 
+> 想使用「MySQL 慢查询诊断」功能？它需要额外起一个 MCP server 并手动配置接线，详见 [README.mysql-diag.zh.md](README.mysql-diag.zh.md)。
+
 ## 社区与支持
 
 - 欢迎通过 [GitHub Discussions](https://github.com/luxiu666/OmniOps/discussions) 提交反馈或 bug 报告。

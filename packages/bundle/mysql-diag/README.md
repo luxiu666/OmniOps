@@ -25,7 +25,7 @@ MySQL 慢查询诊断 bundle：让 dsh 获得「慢查询分析」skill，并自
 
 方式一（推荐，装到某个 profile）：
 ```sh
-dsh plugin --profile web add @deepseek-ai/dsh-mysql-diag
+dsh plugin --profile web add @luxiu666/dsh-mysql-diag
 ```
 
 方式二（手动加到 profile 的 `package.json`）：
@@ -33,7 +33,7 @@ dsh plugin --profile web add @deepseek-ai/dsh-mysql-diag
 {
   "dsh": {
     "profile": {
-      "bundles": ["@deepseek-ai/dsh-mysql-diag"]
+      "bundles": ["@luxiu666/dsh-mysql-diag"]
     }
   }
 }
